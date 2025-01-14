@@ -30,13 +30,13 @@ class _LoginScreenState extends State<LoginScreen> {
     viewModel = Provider.of<LoginViewModel>(context, listen: false);
   }
 
-  Future<void> _showDialog(BuildContext context, String message) async {
+  Future<void> _showDialog(BuildContext context, String title, String message) async {
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Center(
-              child: Text("Error!", textAlign: TextAlign.center),
+            title: Center(
+              child: Text(title, textAlign: TextAlign.center),
             ),
             content: Text(message, textAlign: TextAlign.center),
             actions: [
@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Future.microtask(() => navigate(context, const HomeScreen()));
             }
             else if (viewModel.networkResponse.status == Status.ERROR) {
-              Future.microtask(() => _showDialog(context, viewModel.networkResponse.message ?? "An error occurred"));
+              Future.microtask(() => _showDialog(context, "Error!" ,viewModel.networkResponse.message ?? "An error occurred"));
             }
 
             return SafeArea(
