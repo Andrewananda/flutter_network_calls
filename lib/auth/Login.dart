@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late LoginViewModel viewModel;
   String email = "";
   String password = "";
+  bool passwordHidden = true;
 
 
   @override
@@ -27,6 +28,32 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: implement initState
     super.initState();
     viewModel = Provider.of<LoginViewModel>(context, listen: false);
+  }
+
+  Future<void> _showDialog(BuildContext context, String message) async {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Center(
+              child: Text("Error!", textAlign: TextAlign.center),
+            ),
+            content: Text(message, textAlign: TextAlign.center),
+            actions: [
+              TextButton(
+                child: const Center(
+                  child: Text('OK', textAlign: TextAlign.center),
+                ),
+                onPressed: () {
+                 viewModel.clearErrorMessage();
+                  Navigator.of(context).pop();
+                  // Navigator.of(context).dispose();
+                },
+              )
+            ],
+          );
+    }
+    );
   }
 
 
@@ -38,6 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (context, viewModel, child){
             if(viewModel.networkResponse.status == Status.COMPLETED) {
               Future.microtask(() => navigate(context, const HomeScreen()));
+            }
+            else if (viewModel.networkResponse.status == Status.ERROR) {
+              Future.microtask(() => _showDialog(context, viewModel.networkResponse.message ?? "An error occurred"));
             }
 
             return SafeArea(
@@ -83,11 +113,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                         const SizedBox(height: 15),
                                         TextFormField(
-                                          obscureText: true,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
+                                          obscureText: passwordHidden,
+                                          decoration: InputDecoration(
+                                            border: const OutlineInputBorder(),
                                             labelText: 'Password',
                                             hintText: 'Enter Password',
+                                            suffixIcon: InkWell(
+                                              child: Icon(passwordHidden ? Icons.visibility_off_sharp : Icons.visibility),
+                                              onTap: () {
+                                                setState(() {
+                                                  passwordHidden = !passwordHidden;
+                                                });
+                                              },
+                                            )
                                           ),
                                           onChanged: (String text) {
                                             setState(() {

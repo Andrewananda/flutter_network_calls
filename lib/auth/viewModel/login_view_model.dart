@@ -83,4 +83,10 @@ class LoginViewModel extends ChangeNotifier {
 
   }
 
+
+  void clearErrorMessage() {
+    _networkResponse = NetworkResponse.initial("Cleared error message");
+    notifyListeners();
+  }
+
 }
